@@ -1,6 +1,8 @@
-import numpy as np
+#pip install pyautogui
 import pyautogui
-import imutils
-import cv2
 
-pyautogui.screenshot("straight_to_disk.png")
+# Take screenshot
+pic = pyautogui.screenshot()
+# Save the image
+pic.save('Screenshot.png')
+
