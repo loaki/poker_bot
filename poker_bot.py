@@ -1,63 +1,61 @@
 import pyautogui
 import pytesseract
+import os
 from PIL import Image, ImageEnhance, ImageFilter
 
-def screenshot():
-    pic = pyautogui.screenshot()
-    pic.save('images/screenshot.png')
+#def screenshot(max):
+max = 8
+pic = pyautogui.screenshot()
+pic.save('images/screenshot.png')
+if (max == 8):
+    pic = pyautogui.screenshot(region=(147, 77, 23, 37))
+    pic.save('images/card1.png')
+    pic = pyautogui.screenshot(region=(171, 77, 25, 37))
+    pic.save('images/card2.png')
+if (max == 6):
     pic = pyautogui.screenshot(region=(94, 129, 23, 37))
     pic.save('images/card1.png')
     pic = pyautogui.screenshot(region=(117, 129, 23, 37))
     pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 270, 23, 37))
-    pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 270, 23, 37))
-    pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 270, 23, 37))
-    pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 270, 23, 37))
-    pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 270, 23, 37))
-    pic.save('images/board5.png')
-    pic = pyautogui.screenshot(region=(420, 380, 130, 25))
-    pic.save('images/pot.png')
-    pic = pyautogui.screenshot(region=(420, 400, 130, 25))
-    pic.save('images/totalpot.png')
-
-#afer : check la position du joueur et son tapis
-
-'''
-#mouse pos and pixel color
-while 1:
-    im = Image.open('images/screenshot.png') # Can be many different formats.
-    pix = im.load()
-    x,y = pyautogui.position()
-    r,g,b=pix[x,y]
-    print(x,y)
-    print(r,g,b)
-'''
-
+pic = pyautogui.screenshot(region=(259, 270, 23, 37))
+pic.save('images/board1.png')
+pic = pyautogui.screenshot(region=(339, 270, 23, 37))
+pic.save('images/board2.png')
+pic = pyautogui.screenshot(region=(419, 270, 23, 37))
+pic.save('images/board3.png')
+pic = pyautogui.screenshot(region=(499, 270, 23, 37))
+pic.save('images/board4.png')
+pic = pyautogui.screenshot(region=(579, 270, 23, 37))
+pic.save('images/board5.png')
+pic = pyautogui.screenshot(region=(420, 380, 135, 25))
+pic.save('images/pot.png')
+pic = pyautogui.screenshot(region=(420, 400, 135, 25))
+pic.save('images/totalpot.png')
+pic = pyautogui.screenshot(region=(420, 380, 135, 45))
+pic.save('images/potlarge.png')
 
 def set_position():
     if pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
-    pyautogui.click(136,182)
+    pyautogui.click(136,175)
 
 def get_nplayer(max):
     nplayer = 0
     im = Image.open('images/screenshot.png')
     pix = im.load()
     if (max == 8):
-        pos = [[380,241],[647,241],[906,241],[1001,444],[909,648],[647,648],[378,648],[290,444]]
+        pos = [[197,128],[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
     if (max == 6):
         pos = [[134,177],[452,127],[768,177],[767,484],[453,534],[134,484]]
     for i in range (max):
         r,g,b=pix[pos[i][0],pos[i][1]-50]
         if (r+2>b and r-2<b and b+2>g and b-2<g and r > 200):
             nplayer += 1
+        else:
+            print('player not found : '+str(i))
     return(nplayer)
 
-'''
+
 def get_pos(max):
     im = Image.open('images/screenshot.png')
     pix = im.load()
@@ -69,28 +67,20 @@ def get_pos(max):
         r,g,b=pix[pos[i][0],pos[i][1]]
         if (r > 100):
             return (i)
-'''
 
-'''
-pos 8players | pos 6players
-1 380  241      134  177
-2 647  241      452  127
-3 906  241      768  177
-4 1001 444      767  484
-5 909  648      453  534
-6 647  648      134  484
-7 378  648
-8 290  444
-pos button 8 | pos button 6
-1
-2
-3
-4
-5
-6
-7
-8
-'''
+def get_number(string):
+    index_list = []
+    del index_list[:]
+    for i, x in enumerate(string):
+        if x.isdigit() == True:
+            index_list.append(i)
+    if not index_list:
+        return 0
+    start = index_list[0]
+    end = index_list[-1] + 1
+    number = string[start:end]
+    return number
+
 def get_symbol(file_name):
     im = Image.open(file_name)
     pix = im.load()
@@ -118,7 +108,7 @@ def action(bet, act):
     #allin = 0, check = 1, call = 2, fold = 3, bet = 4 
     if pyautogui.locateOnScreen('images/button/allin.png') != None and act == 0:
         pyautogui.click('images/button/allin.png')
-    if pyautogui.locateOnScreen('images/button/check.png') != None and act == 1:
+    if pyautogui.locateOnScreen('images/button/check.png') != None and (act == 1 or act ==3):
         pyautogui.click('images/button/check.png')
     if pyautogui.locateOnScreen('images/button/call.png') != None and act == 2:
         pyautogui.click('images/button/call.png')
@@ -129,33 +119,38 @@ def action(bet, act):
         pyautogui.write(bet, interval=0.25)
         pyautogui.press('enter')
 
+class Card():
+    v = ''
+    s = ''
+    def __init__(self, file_name):
+        if get_symbol(file_name) != 'N':
+            self.v = read_data(file_name)
+            self.s = get_symbol(file_name)
+
+class Data():
+    def __init__(self, max):
+        self.max = max
+        self.nplayer = get_nplayer(max)
+    card1 = Card('images/card1.png')
+    card2 = Card('images/card2.png')
+    board1 = Card('images/board1.png')
+    board2 = Card('images/board2.png')
+    board3 = Card('images/board3.png')
+    board4 = Card('images/board4.png')
+    board5 = Card('images/board5.png')
+    print(read_data('images/pot.png'))
+    print(read_data('images/totalpot.png'))
+    pot = get_number(read_data('images/pot.png'))
+    tpot = get_number(read_data('images/totalpot.png'))
+    stack = 0
 
 if __name__ == "__main__":
     #set_position()
-    screenshot()
-
-    print(get_nplayer(6))
-    print('hand\n')
-    print(read_data('images/card1.png'))
-    print(get_symbol('images/card1.png'))
-    print(read_data('images/card2.png'))
-    print(get_symbol('images/card2.png'))
-    print('board1\n')
-    print(read_data('images/board1.png'))
-    print(get_symbol('images/board1.png'))
-    print('board2\n')
-    print(read_data('images/board2.png'))
-    print(get_symbol('images/board2.png'))
-    print('board3\n')
-    print(read_data('images/board3.png'))
-    print(get_symbol('images/board3.png'))
-    print('board4\n')
-    print(read_data('images/board4.png'))
-    print(get_symbol('images/board4.png'))
-    print('board5\n')
-    print(read_data('images/board5.png'))
-    print(get_symbol('images/board5.png'))
-    print('pot\n')
-    print(read_data('images/pot.png'))
-    print(read_data('images/totalpot.png'))
-
+    
+    d = Data(max)
+    print(d.nplayer)
+    print(d.board1.v, d.board1.s)
+    print(d.pot)
+    print(d.tpot)
+    
+#afer : check la position du joueur et son stack
