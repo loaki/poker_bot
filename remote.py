@@ -57,7 +57,6 @@ def discord():
             pic = pyautogui.screenshot(region=(wloc[0]-10, wloc[1]-70, 120, 25))
             pic.save('images/cmd.png')
             cmd = read_cmd('images/cmd.png')
-            print(cmd)
             if (cmd == 'screenshot' or cmd == 'Screenshot'):
                 dc_write('ok')
                 dc_screenshot()

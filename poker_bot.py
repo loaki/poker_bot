@@ -1,11 +1,11 @@
 import pyautogui
 import pytesseract
 import os
+import sys
 
 from decision_making import algo
 from remote import discord, dc_result
 from PIL import Image, ImageEnhance, ImageFilter
-
 
 def screenshot(max):
     pic = pyautogui.screenshot()
@@ -153,9 +153,11 @@ def action(bet, act):
     if pyautogui.locateOnScreen('images/button/allin.png') != None and act == 0:
         pyautogui.click('images/button/allin.png')
         pyautogui.press('enter')
+    if pyautogui.locateOnScreen('images/button/raise.png') != None and act == 0:
+        pyautogui.click('images/button/raise.png')
     if pyautogui.locateOnScreen('images/button/check.png') != None and (act == 1 or act ==3):
         pyautogui.click('images/button/check.png')
-    if pyautogui.locateOnScreen('images/button/call.png') != None and act == 2:
+    if pyautogui.locateOnScreen('images/button/call.png') != None and (act == 2 or act == 0):
         pyautogui.click('images/button/call.png')
     if pyautogui.locateOnScreen('images/button/fold.png') != None and act == 3:
         pyautogui.click('images/button/fold.png')
@@ -225,7 +227,10 @@ class Data():
 
 if __name__ == "__main__":
     exit = 0
-    dc = 1
+    if len(sys.argv) > 1 and sys.argv[1] == '-dc':
+        dc = 1
+    else:
+        dc = 0
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
     while exit == 0:
@@ -246,7 +251,6 @@ if __name__ == "__main__":
         if dc == 1:
             exit = discord()
         if pyautogui.locateOnScreen('images/button/finish.png') != None:
-            print('????????')
             pic = pyautogui.screenshot(region=(159, 156, 589, 432))
             pic.save('images/result.png')
             if dc == 1:
