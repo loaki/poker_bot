@@ -2,6 +2,7 @@ import pyautogui
 import pytesseract
 import os
 
+from lobby import t_info, t_register
 from PIL import Image, ImageEnhance, ImageFilter
 
 def read_cmd(file_name):
@@ -22,11 +23,10 @@ def dc_write(string):
         pyautogui.press('enter')
 
 def dc_screenshot():
-    dc_write('ok')
     if pyautogui.locateOnScreen('images/discord/screenshot.png') != None:
         pyautogui.click('images/discord/screenshot.png')
         if pyautogui.locateOnScreen('images/discord/+.png') != None:
-            pyautogui.click('images/discord/+.png')
+            pyautogui.click('images/discord/+.png', interval = 0.25)
             pyautogui.write('screenshot.png')
             pyautogui.press('enter', interval = 0.25)
             pyautogui.press('enter')
@@ -35,7 +35,7 @@ def dc_result():
     if pyautogui.locateOnScreen('images/discord/results.png') != None:
         pyautogui.click('images/discord/results.png')
         if pyautogui.locateOnScreen('images/discord/+.png') != None:
-            pyautogui.click('images/discord/+.png')
+            pyautogui.click('images/discord/+.png', interval = 0.25)
             pyautogui.write('result.png')
             pyautogui.press('enter', interval = 0.25)
             pyautogui.press('enter')
@@ -45,6 +45,8 @@ def discord():
         pyautogui.click('images/discord/cancel.png')
     if pyautogui.locateOnScreen('images/discord/shortcut.png') != None:
         pyautogui.click('images/discord/shortcut.png')
+    if pyautogui.locateOnScreen('images/discord/shortcut2.png') != None:
+        pyautogui.click('images/discord/shortcut2.png')
     if pyautogui.locateOnScreen('images/discord/server.png') != None:
         pyautogui.click('images/discord/server.png')
     if pyautogui.locateOnScreen('images/discord/cmd.png') != None:
@@ -57,4 +59,15 @@ def discord():
             cmd = read_cmd('images/cmd.png')
             print(cmd)
             if (cmd == 'screenshot' or cmd == 'Screenshot'):
+                dc_write('ok')
                 dc_screenshot()
+            if (cmd == 'info' or cmd == 'Info'):
+                dc_write('ok')
+                t_info()
+            if (cmd == 'register' or cmd == 'Register'):
+                dc_write('ok')
+                t_register()
+            if (cmd == 'stop' or cmd == 'Stop'):
+                dc_write('ok')
+                return (1)
+    return (0)

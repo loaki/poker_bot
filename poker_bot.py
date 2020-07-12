@@ -40,12 +40,18 @@ def screenshot(max):
     pic.save('images/tocall.png')
 
 def set_position(max):
-    if pyautogui.locateOnScreen('images/button/seat.png') != None:
-        pyautogui.click('images/button/seat.png')
+    im = Image.open('images/screenshot.png')
+    pix = im.load()
     if max == 8:
-        pyautogui.click(136,175)
+        r,g,b=pix[193,128+5]
     if max == 6:
-        pyautogui.click(136,180)
+        r,g,b=pix[140,177+5]
+    if r < 215 and pyautogui.locateOnScreen('images/button/seat.png') != None:
+        pyautogui.click('images/button/seat.png')
+        if max == 8:
+            pyautogui.click(136,175)
+        if max == 6:
+            pyautogui.click(136,180)
 
 def new_table(max):
     if pyautogui.locateOnScreen('images/button/newtable.png') != None:
@@ -55,8 +61,8 @@ def new_table(max):
 def sit_back():
     if pyautogui.locateOnScreen('images/button/smiley.png') == None:
         pyautogui.click(511,19)
-        if pyautogui.locateOnScreen('images/button/sitback.png') != None:
-            pyautogui.click('images/button/sitback.png')
+    if pyautogui.locateOnScreen('images/button/sitback.png') != None:
+        pyautogui.click('images/button/sitback.png')
 
 def get_max():
     if (get_nplayer(8)/8 > get_nplayer(6)/6):
@@ -138,7 +144,7 @@ def read_card(file_name):
     string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
     if not string:
         return ''
-    if (string[0] == '1' and string[1] == '0'):
+    if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
         return ('T')
     return (string[0])
 
@@ -218,14 +224,15 @@ class Data():
     stack = 0
 
 if __name__ == "__main__":
+    exit = 0
+    dc = 1
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
-    max = get_max()
-    set_position(max)
-    screenshot(max)
-    while pyautogui.locateOnScreen('images/button/finish.png') == None:
+    while exit == 0:
         sit_back()
+        max = get_max()
         new_table(max)
+        set_position(max)
         screenshot(max)
         if pyautogui.locateOnScreen('images/button/bet.png') != None or pyautogui.locateOnScreen('images/button/fold.png') != None:
             screenshot(max)
@@ -236,10 +243,20 @@ if __name__ == "__main__":
             print(bet, act)
             print('\n')
             action(bet , act)
-        discord()
-    pic = pyautogui.screenshot(region=(159, 156, 589, 432))
-    pic.save('images/result.png')
-    dc_result()
+        if dc == 1:
+            exit = discord()
+        if pyautogui.locateOnScreen('images/button/finish.png') != None:
+            print('????????')
+            pic = pyautogui.screenshot(region=(159, 156, 589, 432))
+            pic.save('images/result.png')
+            if dc == 1:
+                dc_result()
+            pyautogui.click(509, 482)
             
-    
-#afer : check la position du joueur et son stack
+'''
+afer : 
+check la position du joueur 
+check stack
+cmd register
+register tounaments
+'''
