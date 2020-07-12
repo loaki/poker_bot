@@ -3,11 +3,11 @@ import pytesseract
 import os
 
 from decision_making import algo
+from remote import discord, dc_result
 from PIL import Image, ImageEnhance, ImageFilter
 
-max = 8
 
-def screenshot():
+def screenshot(max):
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
     if (max == 8):
@@ -39,7 +39,7 @@ def screenshot():
     pic = pyautogui.screenshot(region=(415, 618, 70, 20))
     pic.save('images/tocall.png')
 
-def set_position():
+def set_position(max):
     if pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
     if max == 8:
@@ -47,10 +47,22 @@ def set_position():
     if max == 6:
         pyautogui.click(136,180)
 
-def new_table():
+def new_table(max):
     if pyautogui.locateOnScreen('images/button/newtable.png') != None:
         pyautogui.click('images/button/newtable.png')
-        set_position()
+        set_position(max)
+
+def sit_back():
+    if pyautogui.locateOnScreen('images/button/smiley.png') == None:
+        pyautogui.click(511,19)
+        if pyautogui.locateOnScreen('images/button/sitback.png') != None:
+            pyautogui.click('images/button/sitback.png')
+
+def get_max():
+    if (get_nplayer(8)/8 > get_nplayer(6)/6):
+        return (8)
+    else:
+        return (6)
 
 def get_nplayer(max):
     nplayer = 0
@@ -120,10 +132,10 @@ def read_card(file_name):
     img = Image.open(file_name).convert('LA')
     enhancer = ImageEnhance.Contrast(img)
     img = enhancer.enhance(2)
-    img.save('images/greyscale.png')
+    img.save('images/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
     customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
-    string = pytesseract.image_to_string('images/greyscale.png', config=customconf)
+    string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
     if not string:
         return ''
     if (string[0] == '1' and string[1] == '0'):
@@ -153,7 +165,7 @@ def init_card(file_name):
         card.s = get_symbol(file_name)
     return card
 
-def init_data(d):
+def init_data(d, max):
     d.max = max
     d.nplayer = get_nplayer(max)
     d.card1 = init_card('images/card1.png')
@@ -174,6 +186,8 @@ def print_data(d):
         d.board1.v+d.board1.s, d.board2.v+d.board2.s, \
         d.board3.v+d.board3.s, d.board4.v+d.board4.s, \
         d.board5.v+d.board5.s)
+    print('max      : '+str(d.max))
+    print('nplayer  : '+str(d.nplayer))
     print('pot      : '+str(d.pot))
     print('tpot     : '+str(d.tpot))
     print('to call  : '+str(d.tocall))
@@ -204,24 +218,28 @@ class Data():
     stack = 0
 
 if __name__ == "__main__":
-    set_position()
-    screenshot()
+    pic = pyautogui.screenshot()
+    pic.save('images/screenshot.png')
+    max = get_max()
+    set_position(max)
+    screenshot(max)
     while pyautogui.locateOnScreen('images/button/finish.png') == None:
-        new_table()
-        screenshot()
-        #d = Data(max)
-        #init_data(d)
-        #print_data(d)
-        #print('\n')
+        sit_back()
+        new_table(max)
+        screenshot(max)
         if pyautogui.locateOnScreen('images/button/bet.png') != None or pyautogui.locateOnScreen('images/button/fold.png') != None:
-            screenshot()
+            screenshot(max)
             d = Data(max)
-            init_data(d)
+            init_data(d, max)
             print_data(d)
             bet, act = algo(d)
             print(bet, act)
             print('\n')
             action(bet , act)
+        discord()
+    pic = pyautogui.screenshot(region=(159, 156, 589, 432))
+    pic.save('images/result.png')
+    dc_result()
             
     
 #afer : check la position du joueur et son stack
