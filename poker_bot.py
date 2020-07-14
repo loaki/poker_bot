@@ -2,6 +2,7 @@ import pyautogui
 import pytesseract
 import os
 import sys
+import shutil
 
 from decision_making import algo
 from remote import discord, dc_result
@@ -11,28 +12,28 @@ def screenshot(max):
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
     if (max == 8):
-        pic = pyautogui.screenshot(region=(148, 78, 21, 36))
+        pic = pyautogui.screenshot(region=(148, 78, 22, 34))
         pic.save('images/card1.png')
-        pic = pyautogui.screenshot(region=(170, 78, 25, 36))
+        pic = pyautogui.screenshot(region=(171, 78, 26, 34))
         pic.save('images/card2.png')
     if (max == 6):
-        pic = pyautogui.screenshot(region=(94, 130, 21, 36))
+        pic = pyautogui.screenshot(region=(94, 130, 21, 34))
         pic.save('images/card1.png')
-        pic = pyautogui.screenshot(region=(117, 130, 23, 36))
+        pic = pyautogui.screenshot(region=(117, 130, 23, 34))
         pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 270, 24, 36))
+    pic = pyautogui.screenshot(region=(259, 270, 24, 34))
     pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 270, 24, 36))
+    pic = pyautogui.screenshot(region=(339, 270, 24, 34))
     pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 270, 24, 36))
+    pic = pyautogui.screenshot(region=(419, 270, 24, 34))
     pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 270, 24, 36))
+    pic = pyautogui.screenshot(region=(499, 270, 24, 34))
     pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 270, 24, 36))
+    pic = pyautogui.screenshot(region=(579, 270, 24, 34))
     pic.save('images/board5.png')
-    pic = pyautogui.screenshot(region=(420, 380, 135, 25))
+    pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
-    pic = pyautogui.screenshot(region=(420, 400, 135, 25))
+    pic = pyautogui.screenshot(region=(498, 400, 80, 21))
     pic.save('images/totalpot.png')
     pic = pyautogui.screenshot(region=(415, 618, 70, 20))
     pic.save('images/tocall.png')
@@ -45,7 +46,7 @@ def set_position(max):
     if max == 6:
         r,g,b=pix[140,177+5]
     #print (r)
-    if r < 94 and pyautogui.locateOnScreen('images/button/seat.png') != None:
+    if r < 91 and pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
         print(r)
         if max == 8:
@@ -64,11 +65,28 @@ def sit_back():
     if pyautogui.locateOnScreen('images/button/sitback.png') != None:
         pyautogui.click('images/button/sitback.png')
 
+def get_nplayermax(max):
+    nplayer = 0
+    im = Image.open('images/screenshot.png')
+    pix = im.load()
+    if (max == 8):
+        pos = [[191,127],[453,127],[720,127],[812,330],[715,534],[453,534],[195,534],[94,331]]
+    if (max == 6):
+        pos = [[134,177],[452,127],[768,177],[767,484],[453,534],[134,484]]
+    for i in range (0,max):
+        r,g,b=pix[pos[i][0],pos[i][1]]
+        if (r+10>b and r-10<b and b+10>g and b-10<g and r > 150):
+            nplayer += 1
+        #else:
+        #    print('player not found : '+str(i),r)
+    return(nplayer)
+
 def get_max():
-    #if (float(get_nplayer(8))/8 > float(get_nplayer(6))/6):
-    return (8)
-    #else:
-    #    return (6)
+    #print((get_nplayermax(8)/8),(get_nplayermax(6)/6))
+    if get_nplayermax(8)/8 > get_nplayermax(6)/6:
+        return (8)
+    else:
+        return (6)
 
 def get_stack():
     if pyautogui.locateOnScreen('images/button/allin.png') != None:
@@ -83,16 +101,16 @@ def get_nplayer(max):
     pix = im.load()
     if (max == 8):
         #pos = [[197,128],[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
-        pos = [[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
+        pos = [[453,127],[720,127],[812,330],[715,534],[453,534],[195,534],[94,331]]
     if (max == 6):
         #pos = [[134,177],[452,127],[768,177],[767,484],[453,534],[134,484]]
         pos = [[452,127],[768,177],[767,484],[453,534],[134,484]]
-    for i in range (1,max - 1):
+    for i in range (0,max - 1):
         r,g,b=pix[pos[i][0],pos[i][1]-50]
         if (r+2>b and r-2<b and b+2>g and b-2<g and r > 200):
             nplayer += 1
         #else:
-        #    print('player not found : '+str(i))
+        #    print('player not found : '+str(i),r)
     return(nplayer+1)
 
 def get_pos(max):
@@ -123,7 +141,7 @@ def get_number(string):
 def get_symbol(file_name):
     im = Image.open(file_name)
     pix = im.load()
-    r,g,b=pix[11,35]
+    r,g,b=pix[10,33]
     if (r >= 225):
         return('d')
     if (r >= 160):
@@ -132,12 +150,15 @@ def get_symbol(file_name):
         return('c')
     if (r == 0):
         return('s')
+    if file_name == 'images/card1.png' or file_name == 'images/card2.png':
+        shutil.copy(file_name, 'images/errors/s'+file_name[7:12]+'.png')
+        print('read error')
     return('N')
 
 def read_data(file_name):
     img = Image.open(file_name).convert('LA')
     enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(2)
+    img = enhancer.enhance(0.1)
     img.save('images/greyscale.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
     customconf = r'-c tessedit_char_whitelist=.01234567859BB --oem 3 --psm 6'
@@ -146,12 +167,14 @@ def read_data(file_name):
 def read_card(file_name):
     img = Image.open(file_name).convert('LA')
     enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(2)
+    img = enhancer.enhance(1.5)
     img.save('images/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
     customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
     string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
     if not string:
+        shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
+        print('read error')
         return ''
     if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
         return ('T')
@@ -265,10 +288,11 @@ if __name__ == "__main__":
             pic.save('images/result.png')
             if dc == 1:
                 dc_result()
-            pyautogui.click(509, 482)
+            pyautogui.click(503, 523)
             
 '''
 afer : 
-get_max
+get_pos
+fix errors
 cmd register
 '''
