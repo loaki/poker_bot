@@ -19,11 +19,15 @@ def t_screenshot():
         if iloc != None:
             pic = pyautogui.screenshot(region=(iloc[0], iloc[1], 1365, 165))
             pic.save('images/tinfo.png')
+        if pyautogui.locateOnScreen('images/discord/shortcut.png') != None:
+            pyautogui.click('images/discord/shortcut.png')
+        if pyautogui.locateOnScreen('images/discord/shortcut2.png') != None:
+            pyautogui.click('images/discord/shortcut2.png')
         if pyautogui.locateOnScreen('images/discord/+.png') != None:
             pyautogui.click('images/discord/+.png', interval = 0.25)
             pyautogui.write('tinfo.png')
             pyautogui.press('enter', interval = 0.25)
-            pyautogui.press('enter')
+            pyautogui.press('enter', interval = 0.25)
 
 def t_info():
     if pyautogui.locateOnScreen('images/lobby/mainchat.png') != None:
@@ -34,7 +38,7 @@ def t_info():
         pix = im.load()
         if pyautogui.locateOnScreen('images/lobby/lobbys.png') != None:
             lloc = pyautogui.locateOnScreen('images/lobby/lobbys.png')
-            for i in range(1,6):
+            for i in range(1,4):
                 r,g,b=pix[int(lloc[0]+i*177),int(lloc[1])]
                 if (r > 60):
                     pyautogui.click(lloc[0]+i*177, lloc[1])

@@ -73,4 +73,4 @@ def algo(d):
         return(0, 3)
     bet = (float(d.tpot)*float(wr))/(1-float(wr))
     print('bet      : ',bet)
-    return(int(bet), 4)
+    return(round(bet, 1), 4)

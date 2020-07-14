@@ -44,7 +44,8 @@ def set_position(max):
         r,g,b=pix[193,128+5]
     if max == 6:
         r,g,b=pix[140,177+5]
-    if r < 75 and pyautogui.locateOnScreen('images/button/seat.png') != None:
+    #print (r)
+    if r < 94 and pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
         print(r)
         if max == 8:
@@ -81,10 +82,12 @@ def get_nplayer(max):
     im = Image.open('images/screenshot.png')
     pix = im.load()
     if (max == 8):
-        pos = [[197,128],[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
+        #pos = [[197,128],[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
+        pos = [[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
     if (max == 6):
-        pos = [[134,177],[452,127],[768,177],[767,484],[453,534],[134,484]]
-    for i in range (1,max):
+        #pos = [[134,177],[452,127],[768,177],[767,484],[453,534],[134,484]]
+        pos = [[452,127],[768,177],[767,484],[453,534],[134,484]]
+    for i in range (1,max - 1):
         r,g,b=pix[pos[i][0],pos[i][1]-50]
         if (r+2>b and r-2<b and b+2>g and b-2<g and r > 200):
             nplayer += 1
@@ -159,8 +162,6 @@ def action(bet, act):
     if pyautogui.locateOnScreen('images/button/allin.png') != None and act == 0:
         pyautogui.click('images/button/allin.png')
         pyautogui.press('enter')
-    if pyautogui.locateOnScreen('images/button/raise.png') != None and act == 0:
-        pyautogui.click('images/button/raise.png')
     if pyautogui.locateOnScreen('images/button/check.png') != None and (act == 1 or act ==3):
         pyautogui.click('images/button/check.png')
     if pyautogui.locateOnScreen('images/button/fold.png') != None and act == 3:
@@ -171,6 +172,8 @@ def action(bet, act):
         pyautogui.press('enter')
     if pyautogui.locateOnScreen('images/button/call.png') != None and (act == 2 or act == 0 or act == 4):
         pyautogui.click('images/button/call.png')
+    if pyautogui.locateOnScreen('images/button/raise.png') != None and (act == 0 or act == 4):
+        pyautogui.click('images/button/raise.png')
 
 def init_card(file_name):
     card = Card(file_name)
@@ -192,7 +195,8 @@ def init_data(d, max):
     d.pot = get_number(read_data('images/pot.png'))
     d.tpot = get_number(read_data('images/totalpot.png'))
     d.tocall = get_number(read_data('images/tocall.png'))
-    d.stack = get_stack()
+    #d.stack = get_stack()
+    stack = 0
 
 def print_data(d):
     print('--------------------')
@@ -230,7 +234,8 @@ class Data():
     pot = get_number(read_data('images/pot.png'))
     tpot = get_number(read_data('images/totalpot.png'))
     tocall = get_number(read_data('images/tocall.png'))
-    stack = get_stack()
+    #stack = get_stack()
+    stack = 0
 
 if __name__ == "__main__":
     exit = 0
@@ -256,7 +261,7 @@ if __name__ == "__main__":
         if dc == 1:
             exit = discord()
         if pyautogui.locateOnScreen('images/button/finish.png') != None:
-            pic = pyautogui.screenshot(region=(159, 156, 589, 432))
+            pic = pyautogui.screenshot(region=(164, 161, 579, 422))
             pic.save('images/result.png')
             if dc == 1:
                 dc_result()
