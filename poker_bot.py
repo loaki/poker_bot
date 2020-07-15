@@ -12,47 +12,50 @@ def screenshot(max):
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
     if (max == 8):
-        pic = pyautogui.screenshot(region=(148, 78, 22, 34))
+        pic = pyautogui.screenshot(region=(410, 78, 24, 34))
         pic.save('images/card1.png')
-        pic = pyautogui.screenshot(region=(171, 78, 26, 34))
+        pic = pyautogui.screenshot(region=(435, 78, 25, 34))
         pic.save('images/card2.png')
     if (max == 6):
-        pic = pyautogui.screenshot(region=(94, 130, 21, 34))
+        pic = pyautogui.screenshot(region=(410, 79, 24, 34))
         pic.save('images/card1.png')
-        pic = pyautogui.screenshot(region=(117, 130, 23, 34))
+        pic = pyautogui.screenshot(region=(434, 79, 26, 34))
         pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 270, 24, 34))
+    pic = pyautogui.screenshot(region=(259, 271, 24, 34))
     pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 270, 24, 34))
+    pic = pyautogui.screenshot(region=(339, 271, 24, 34))
     pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 270, 24, 34))
+    pic = pyautogui.screenshot(region=(419, 271, 24, 34))
     pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 270, 24, 34))
+    pic = pyautogui.screenshot(region=(499, 271, 24, 34))
     pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 270, 24, 34))
+    pic = pyautogui.screenshot(region=(579, 271, 24, 34))
     pic.save('images/board5.png')
     pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
-    pic = pyautogui.screenshot(region=(498, 400, 80, 21))
+    pic = pyautogui.screenshot(region=(498, 402, 70, 21))
     pic.save('images/totalpot.png')
-    pic = pyautogui.screenshot(region=(415, 618, 70, 20))
+    pic = pyautogui.screenshot(region=(415, 618, 43, 20))
     pic.save('images/tocall.png')
+    pic = pyautogui.screenshot(region=(409, 153, 80, 25))
+    pic.save('images/stack.png')
 
 def set_position(max):
     im = Image.open('images/screenshot.png')
     pix = im.load()
     if max == 8:
-        r,g,b=pix[193,128+5]
+        r,g,b=pix[457,127+5]
     if max == 6:
-        r,g,b=pix[140,177+5]
+        r,g,b=pix[457,127+5]
     #print (r)
-    if r < 91 and pyautogui.locateOnScreen('images/button/seat.png') != None:
+    #pyautogui.click(457,127+5)
+    if r < 95 and pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
         print(r)
         if max == 8:
-            pyautogui.click(136,175)
+            pyautogui.click(457,132)
         if max == 6:
-            pyautogui.click(136,180)
+            pyautogui.click(457,127+5)
 
 def new_table(max):
     if pyautogui.locateOnScreen('images/button/newtable.png') != None:
@@ -93,7 +96,7 @@ def get_stack():
         pyautogui.click('images/button/allin.png')
     pic = pyautogui.screenshot(region=(534, 619, 120, 18))
     pic.save('images/stack.png')
-    return(get_number(read_data('images/stack.png')))
+    return get_number('images/stack.png', 0.5)
 
 def get_nplayer(max):
     nplayer = 0
@@ -101,10 +104,10 @@ def get_nplayer(max):
     pix = im.load()
     if (max == 8):
         #pos = [[197,128],[453,127],[720,127],[807,331],[715,534],[453,534],[195,534],[94,331]]
-        pos = [[453,127],[720,127],[812,330],[715,534],[453,534],[195,534],[94,331]]
+        pos = [[191,127],[720,127],[812,330],[715,534],[453,534],[195,534],[94,331]]
     if (max == 6):
         #pos = [[134,177],[452,127],[768,177],[767,484],[453,534],[134,484]]
-        pos = [[452,127],[768,177],[767,484],[453,534],[134,484]]
+        pos = [[134,177],[768,177],[767,484],[453,534],[134,484]]
     for i in range (0,max - 1):
         r,g,b=pix[pos[i][0],pos[i][1]-50]
         if (r+2>b and r-2<b and b+2>g and b-2<g and r > 200):
@@ -125,12 +128,15 @@ def get_pos(max):
         if (r > 100):
             return (i)
 
-def get_number(string):
+def get_number(file_name, en):
+    string = read_data(file_name, en)
     index_list = []
     del index_list[:]
     for i, x in enumerate(string):
         if x.isdigit() == True:
             index_list.append(i)
+    if not index_list and en < 5:
+        return get_number(file_name, en + 0.5)
     if not index_list:
         return 0
     start = index_list[0]
@@ -148,34 +154,41 @@ def get_symbol(file_name):
         return('h')
     if (r >= 64):
         return('c')
-    if (r == 0):
+    if (r <= 4):
         return('s')
     if file_name == 'images/card1.png' or file_name == 'images/card2.png':
         shutil.copy(file_name, 'images/errors/s'+file_name[7:12]+'.png')
         print('read error')
     return('N')
 
-def read_data(file_name):
+def read_data(file_name, en):
     img = Image.open(file_name).convert('LA')
     enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(0.1)
+    img = enhancer.enhance(en)
+    img = img.filter(ImageFilter.GaussianBlur(radius = 0.3))
     img.save('images/greyscale.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    customconf = r'-c tessedit_char_whitelist=.01234567859BB --oem 3 --psm 6'
+    TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
+    customconf = r'-c tessedit_char_whitelist=B.01234567859 --oem 3 --psm 6'
     return (pytesseract.image_to_string('images/greyscale.png', config=customconf))
 
-def read_card(file_name):
+def read_card(file_name, en):
     img = Image.open(file_name).convert('LA')
     enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(1.5)
+    img = enhancer.enhance(en)
+    #img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
     img.save('images/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
+    TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
     customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
     string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
+    if not string and en < 5:
+        return (read_card(file_name, en + 0.5))
     if not string:
+        #error read for 8
         shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
         print('read error')
-        return ''
+        return '8'
     if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
         return ('T')
     return (string[0])
@@ -201,7 +214,7 @@ def action(bet, act):
 def init_card(file_name):
     card = Card(file_name)
     if get_symbol(file_name) != 'N':
-        card.v = read_card(file_name)
+        card.v = read_card(file_name, 0.5)
         card.s = get_symbol(file_name)
     return card
 
@@ -215,11 +228,10 @@ def init_data(d, max):
     d.board3 = init_card('images/board3.png')
     d.board4 = init_card('images/board4.png')
     d.board5 = init_card('images/board5.png')
-    d.pot = get_number(read_data('images/pot.png'))
-    d.tpot = get_number(read_data('images/totalpot.png'))
-    d.tocall = get_number(read_data('images/tocall.png'))
-    #d.stack = get_stack()
-    stack = 0
+    d.pot = get_number('images/pot.png', 0.5)
+    d.tpot = get_number('images/totalpot.png', 3)
+    d.tocall = get_number('images/tocall.png', 0.5)
+    d.stack = get_number('images/stack.png', 0.5)
 
 def print_data(d):
     print('--------------------')
@@ -240,7 +252,7 @@ class Card():
     s = ''
     def __init__(self, file_name):
         if get_symbol(file_name) != 'N':
-            self.v = read_card(file_name)
+            self.v = read_card(file_name, 0.5)
             self.s = get_symbol(file_name)
 
 class Data():
@@ -254,13 +266,13 @@ class Data():
     board3 = Card('images/board3.png')
     board4 = Card('images/board4.png')
     board5 = Card('images/board5.png')
-    pot = get_number(read_data('images/pot.png'))
-    tpot = get_number(read_data('images/totalpot.png'))
-    tocall = get_number(read_data('images/tocall.png'))
-    #stack = get_stack()
-    stack = 0
+    pot = get_number('images/pot.png', 0.5)
+    tpot = get_number('images/totalpot.png', 0.5)
+    tocall = get_number('images/tocall.png', 0.5)
+    stack = get_number('images/stack.png', 0.5)
 
 if __name__ == "__main__":
+    sys.tracebacklimit = 0
     exit = 0
     if len(sys.argv) > 1 and sys.argv[1] == '-dc':
         dc = 1
@@ -274,9 +286,9 @@ if __name__ == "__main__":
         new_table(max)
         set_position(max)
         screenshot(max)
+        d = Data(max)
         if pyautogui.locateOnScreen('images/button/bet.png') != None or pyautogui.locateOnScreen('images/button/fold.png') != None:
             screenshot(max)
-            d = Data(max)
             init_data(d, max)
             print_data(d)
             bet, act = algo(d)
@@ -288,7 +300,8 @@ if __name__ == "__main__":
             pic.save('images/result.png')
             if dc == 1:
                 dc_result()
-            pyautogui.click(503, 523)
+            if pyautogui.locateOnScreen('images/button/quit.png') != None:
+                pyautogui.click('images/button/quit.png')
             
 '''
 afer : 

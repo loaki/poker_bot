@@ -3,6 +3,7 @@ import cmd
 import collections
 import enum
 import time
+import sys
 
 import prettytable
 import pokershell.config as config
@@ -47,10 +48,8 @@ def simulate(state, simulator):
         print ('win rate : ',result.win_rate)
         #print(bet.BetAdviser.get_equity(result.win_rate, state.pot))
         return(result.win_rate)
-    
-def algo(d):
-    
-    #freeroll
+
+def shove(d):
     if (d.card1.v == d.card2.v and (d.card1.v == 'A' or d.card1.v == 'K' or d.card1.v == 'Q' or d.card1.v == 'J' or d.card1.v == 'T')):
         return (0, 0)
     if (d.card1.v == 'A' and (d.card2.v == 'A' or d.card2.v == 'K' or d.card2.v == 'Q' or d.card2.v == 'J' or d.card2.v == 'T')):
@@ -58,8 +57,9 @@ def algo(d):
     if (d.card2.v == 'A' and (d.card1.v == 'A' or d.card1.v == 'K' or d.card1.v == 'Q' or d.card1.v == 'J' or d.card1.v == 'T')):
         return (0, 0)
     return (0, 3)
-    
-    #simulation
+
+def algo(d):
+    #return shove(d)
     cards = d.card1.v+d.card1.s+d.card2.v+d.card2.s
     if d.board1.v != '':
         cards+=' '+d.board1.v+d.board1.s
@@ -80,9 +80,27 @@ def algo(d):
     simulator = sim_manager.find_simulator(state.player_num or config.player_num.value, *state.cards)
     wr = simulate(state, simulator)
     wr = wr**(wr)
+    return (shove(d))
     if (float(d.tocall) > float((float(d.tpot)+float(d.tocall))*float(wr))):
         print('fold')
         return(0, 3)
     bet = (float(d.tpot)*float(wr))/(1-float(wr))
     print('bet      : ',bet)
-    return(round(bet, 1), 4)
+    return (round(bet, 1), 4)
+
+if __name__ == "__main__":
+    #cards = 'AsAc 5 1.0'
+    cards = sys.argv[1]
+    state = parse_history(cards)
+    #if state == None:
+        #return (0, 3)
+    sim_manager = simulation.SimulatorManager()
+    simulator = sim_manager.find_simulator(state.player_num or config.player_num.value, *state.cards)
+    wr = simulate(state, simulator)
+    print(wr)
+    #if (float(d.tocall) > float((float(d.tpot)+float(d.tocall))*float(wr))):
+    #    print('fold')
+        #return(0, 3)
+    #bet = (float(d.tpot)*float(wr))/(1-float(wr))
+    #print('bet      : ',bet)
+    #return (round(bet, 1), 4)
