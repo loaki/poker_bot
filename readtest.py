@@ -27,10 +27,10 @@ def read_card(file_name, en):
     img = Image.open(file_name).convert('L')
     enhancer = ImageEnhance.Contrast(img)
     img = enhancer.enhance(float(en))
-    img = img.filter(ImageFilter.GaussianBlur(radius = 0.1))
+    img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
     img.save('images/errors/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    customconf = r'-c tessedit_char_whitelist=B.0123456789 --oem 3 --psm 6'
+    customconf = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz --oem 3 --psm 6'
     string = pytesseract.image_to_string('images/errors/greyscalecard.png', config=customconf)
     return (string)
     if not string:

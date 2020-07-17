@@ -21,15 +21,15 @@ def screenshot(max):
         pic.save('images/card1.png')
         pic = pyautogui.screenshot(region=(434, 79, 26, 34))
         pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 271, 24, 34))
+    pic = pyautogui.screenshot(region=(259, 272, 26, 34))
     pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 271, 24, 34))
+    pic = pyautogui.screenshot(region=(339, 272, 26, 34))
     pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 271, 24, 34))
+    pic = pyautogui.screenshot(region=(419, 272, 26, 34))
     pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 271, 24, 34))
+    pic = pyautogui.screenshot(region=(499, 272, 26, 34))
     pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 271, 24, 34))
+    pic = pyautogui.screenshot(region=(579, 272, 26, 34))
     pic.save('images/board5.png')
     pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
@@ -168,7 +168,7 @@ def read_data(file_name, en):
     img = img.filter(ImageFilter.GaussianBlur(radius = 0.3))
     img.save('images/greyscale.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
+    #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
     customconf = r'-c tessedit_char_whitelist=B.01234567859 --oem 3 --psm 6'
     return (pytesseract.image_to_string('images/greyscale.png', config=customconf))
 
@@ -179,7 +179,7 @@ def read_card(file_name, en):
     #img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
     img.save('images/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
+    #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
     customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
     string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
     if not string and en < 5:
@@ -252,7 +252,7 @@ class Card():
     s = ''
     def __init__(self, file_name):
         if get_symbol(file_name) != 'N':
-            self.v = read_card(file_name, 0.5)
+            self.v = read_card(file_name, 3)
             self.s = get_symbol(file_name)
 
 class Data():
@@ -270,6 +270,7 @@ class Data():
     tpot = get_number('images/totalpot.png', 0.5)
     tocall = get_number('images/tocall.png', 0.5)
     stack = get_number('images/stack.png', 0.5)
+    auto_register = 0
 
 if __name__ == "__main__":
     sys.tracebacklimit = 0
@@ -280,22 +281,31 @@ if __name__ == "__main__":
         dc = 0
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
+    max = get_max()
+    d = Data(max)
     while exit == 0:
         sit_back()
         max = get_max()
         new_table(max)
         set_position(max)
         screenshot(max)
-        d = Data(max)
-        if pyautogui.locateOnScreen('images/button/bet.png') != None or pyautogui.locateOnScreen('images/button/fold.png') != None:
-            screenshot(max)
+        
+        im = Image.open('images/screenshot.png')
+        pix = im.load()
+        r,g,b=pix[513,643]
+        if g < 20:
+        #if pyautogui.locateOnScreen('images/button/bet.png') != None or pyautogui.locateOnScreen('images/button/fold.png') != None:
+            #screenshot(max)
             init_data(d, max)
             print_data(d)
             bet, act = algo(d)
+            print(bet, act)
             action(bet , act)
         if dc == 1:
-            exit = discord()
-        if pyautogui.locateOnScreen('images/button/finish.png') != None:
+            exit, d.auto_register = discord(d)
+        r,g,b=pix[453,254]
+        if r == 188:
+        #if pyautogui.locateOnScreen('images/button/finish.png') != None:
             pic = pyautogui.screenshot(region=(164, 161, 579, 422))
             pic.save('images/result.png')
             if dc == 1:
@@ -305,6 +315,7 @@ if __name__ == "__main__":
             
 '''
 afer : 
+new command autoregister
 get_pos
 fix errors
 cmd register

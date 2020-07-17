@@ -10,7 +10,7 @@ def read_t(file_name):
     img = enhancer.enhance(2)
     img.save('images/greyscaledc.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    customconf = r'-c tessedit_char_whitelist=ABCDEFHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz --oem 3 --psm 6'
+    customconf = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz --oem 3 --psm 6'
     return (pytesseract.image_to_string('images/greyscaledc.png', config=customconf))
 
 def t_screenshot():
@@ -32,22 +32,24 @@ def t_screenshot():
 def t_info():
     if pyautogui.locateOnScreen('images/lobby/mainchat.png') != None:
         pyautogui.click('images/lobby/mainchat.png')
-        pic = pyautogui.screenshot()
-        pic.save('images/lobby.png')
-        im = Image.open('images/lobby.png')
-        pix = im.load()
-        if pyautogui.locateOnScreen('images/lobby/lobbys.png') != None:
-            lloc = pyautogui.locateOnScreen('images/lobby/lobbys.png')
-            for i in range(1,4):
-                r,g,b=pix[int(lloc[0]+i*177),int(lloc[1])]
-                if (r > 60):
-                    pyautogui.click(lloc[0]+i*177, lloc[1])
-                    if pyautogui.locateOnScreen('images/lobby/finalpos.png') != None or t_check() == 0:
-                        pyautogui.doubleClick(lloc[0]+i*177+147, lloc[1]+8, interval = 0.25)
-                    else:
-                        t_screenshot()
-            if pyautogui.locateOnScreen('images/lobby/lobby.png') != None:
-                pyautogui.click('images/lobby/lobby.png')
+    else:
+        pyautogui.click(115, 732)
+    pic = pyautogui.screenshot()
+    pic.save('images/lobby.png')
+    im = Image.open('images/lobby.png')
+    pix = im.load()
+    if pyautogui.locateOnScreen('images/lobby/lobbys.png') != None:
+        lloc = pyautogui.locateOnScreen('images/lobby/lobbys.png')
+        for i in range(1,5):
+            r,g,b=pix[int(lloc[0]+i*177),int(lloc[1])]
+            if (r > 60):
+                pyautogui.click(lloc[0]+i*177, lloc[1])
+                if pyautogui.locateOnScreen('images/lobby/finalpos.png') != None or t_check() == 0:
+                    pyautogui.doubleClick(lloc[0]+i*177+147, lloc[1]+8, interval = 0.25)
+                else:
+                    t_screenshot()
+        if pyautogui.locateOnScreen('images/lobby/lobby.png') != None:
+            pyautogui.click('images/lobby/lobby.png')
 
 def t_check():
     if pyautogui.locateOnScreen('images/lobby/info.png') != None:
@@ -62,16 +64,17 @@ def t_check():
 def t_register():
     if pyautogui.locateOnScreen('images/lobby/mainchat.png') != None:
         pyautogui.click('images/lobby/mainchat.png')
-        if pyautogui.locateOnScreen('images/lobby/name.png') != None:
-            nloc = pyautogui.locateOnScreen('images/lobby/name.png')
-            for i in range(1,4):
-                pyautogui.click(nloc[0], nloc[1]+5+i*22, clicks = 2)
-                if pyautogui.locateOnScreen('images/lobby/registerfree.png') != None:
-                    pyautogui.click('images/lobby/registerfree.png')
-                    if pyautogui.locateOnScreen('images/lobby/register.png') != None:
-                        pyautogui.click('images/lobby/register.png')
-                if pyautogui.locateOnScreen('images/lobby/lobby.png') != None:
-                    pyautogui.click('images/lobby/lobby.png')
-    t_info()
+    else:
+        pyautogui.click(115, 732)
+    if pyautogui.locateOnScreen('images/lobby/name.png') != None:
+        nloc = pyautogui.locateOnScreen('images/lobby/name.png')
+        for i in range(1,5):
+            pyautogui.click(nloc[0], nloc[1]+5+i*22, clicks = 2)
+            if pyautogui.locateOnScreen('images/lobby/registerfree.png') != None:
+                pyautogui.click('images/lobby/registerfree.png')
+                if pyautogui.locateOnScreen('images/lobby/register.png') != None:
+                    pyautogui.click('images/lobby/register.png')
+            if pyautogui.locateOnScreen('images/lobby/lobby.png') != None:
+                pyautogui.click('images/lobby/lobby.png')
 
     

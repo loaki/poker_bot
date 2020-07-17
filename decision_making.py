@@ -4,6 +4,7 @@ import collections
 import enum
 import time
 import sys
+import time
 
 import prettytable
 import pokershell.config as config
@@ -27,7 +28,7 @@ def parse_history(line):
 
 def simulate(state, simulator):
         #self._print_game(state)
-
+        print('simualtor = ',simulator.name)
         if not simulator:
             print('\nNo simulator found!\n')
             return 0
@@ -44,8 +45,8 @@ def simulate(state, simulator):
             return 0
 
         start = time.time()
+        print('start sim')
         result = simulator.simulate(player_num, *state.cards)
-        print ('win rate : ',result.win_rate)
         #print(bet.BetAdviser.get_equity(result.win_rate, state.pot))
         return(result.win_rate)
 
@@ -59,7 +60,7 @@ def shove(d):
     return (0, 3)
 
 def algo(d):
-    #return shove(d)
+    return (shove(d))
     cards = d.card1.v+d.card1.s+d.card2.v+d.card2.s
     if d.board1.v != '':
         cards+=' '+d.board1.v+d.board1.s
@@ -79,8 +80,10 @@ def algo(d):
     sim_manager = simulation.SimulatorManager()
     simulator = sim_manager.find_simulator(state.player_num or config.player_num.value, *state.cards)
     wr = simulate(state, simulator)
-    wr = wr**(wr)
+    print ('win rate : ',wr)
+
     return (shove(d))
+
     if (float(d.tocall) > float((float(d.tpot)+float(d.tocall))*float(wr))):
         print('fold')
         return(0, 3)
@@ -92,7 +95,7 @@ if __name__ == "__main__":
     #cards = 'AsAc 5 1.0'
     cards = sys.argv[1]
     state = parse_history(cards)
-    #if state == None:
+    #if state == None: 
         #return (0, 3)
     sim_manager = simulation.SimulatorManager()
     simulator = sim_manager.find_simulator(state.player_num or config.player_num.value, *state.cards)
