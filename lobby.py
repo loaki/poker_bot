@@ -25,8 +25,8 @@ def t_screenshot():
             pyautogui.click('images/discord/shortcut2.png')
         if pyautogui.locateOnScreen('images/discord/+.png') != None:
             pyautogui.click('images/discord/+.png', interval = 0.25)
-            pyautogui.write('tinfo.png')
-            pyautogui.press('enter', interval = 0.25)
+            pyautogui.write('tinfo.png', interval = 0.1)
+            pyautogui.press('enter', interval = 0.3)
             pyautogui.press('enter', interval = 0.25)
 
 def t_info():

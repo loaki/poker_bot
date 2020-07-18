@@ -304,14 +304,15 @@ if __name__ == "__main__":
         if dc == 1:
             exit, d.auto_register = discord(d)
         r,g,b=pix[453,254]
-        if r == 188:
+        #print (r)
+        if r >= 188 and r < 192:
+            print(r)
         #if pyautogui.locateOnScreen('images/button/finish.png') != None:
             pic = pyautogui.screenshot(region=(164, 161, 579, 422))
             pic.save('images/result.png')
             if dc == 1:
                 dc_result()
-            if pyautogui.locateOnScreen('images/button/quit.png') != None:
-                pyautogui.click('images/button/quit.png')
+            pyautogui.click(528, 506)
             
 '''
 afer : 

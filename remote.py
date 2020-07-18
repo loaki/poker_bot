@@ -8,7 +8,7 @@ from PIL import Image, ImageEnhance, ImageFilter
 def read_cmd(file_name):
     img = Image.open(file_name).convert('L')
     enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(1.4)
+    img = enhancer.enhance(2)
     img = img.filter(ImageFilter.GaussianBlur(radius = 0.1))
     img.save('images/greyscaledc.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
@@ -58,7 +58,7 @@ def discord(d):
             pic = pyautogui.screenshot(region=(wloc[0]-10, wloc[1]-70, 120, 25))
             pic.save('images/cmd.png')
             cmd = read_cmd('images/cmd.png')
-            print(cmd)
+            #print(cmd)
             if cmd == 'screenshot':
                 dc_write('ok')
                 dc_screenshot()

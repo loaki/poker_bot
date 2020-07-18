@@ -27,7 +27,7 @@ def read_card(file_name, en):
     img = Image.open(file_name).convert('L')
     enhancer = ImageEnhance.Contrast(img)
     img = enhancer.enhance(float(en))
-    img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
+    img = img.filter(ImageFilter.GaussianBlur(radius = 0.1))
     img.save('images/errors/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
     customconf = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz --oem 3 --psm 6'
