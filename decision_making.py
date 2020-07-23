@@ -74,7 +74,7 @@ def algo(d):
                     if d.board5.v != '':
                         cards+=d.board5.v+d.board5.s
     cards+=' '+str(d.nplayer)+' 1.0;'
-    print(cards)
+    #print(cards)
     state = parse_history(cards)
     if state == None:
         return (0, 0, 3)
@@ -85,11 +85,9 @@ def algo(d):
     return (shove(d))
 
     if (float(d.tocall) > float((float(d.tpot)+float(d.tocall))*float(wr))):
-        print('fold')
-        return(0, 3)
+        return(0, 0, 3)
     bet = (float(d.tpot)*float(wr))/(1-float(wr))
-    print('bet      : ',bet)
-    return (round(bet, 1), 4)
+    return (0, round(bet, 1), 4)
 
 
 if __name__ == "__main__":

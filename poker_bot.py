@@ -330,5 +330,6 @@ if __name__ == "__main__":
 '''
 afer : 
 get_pos
+get 2 cursor
 fix errors
 '''
