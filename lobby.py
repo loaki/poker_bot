@@ -34,6 +34,8 @@ def t_info():
         pyautogui.click('images/lobby/mainchat.png')
     else:
         pyautogui.click(115, 732)
+    if pyautogui.locateOnScreen('images/lobby/lobby.png') != None:
+        pyautogui.click('images/lobby/lobby.png')
     pic = pyautogui.screenshot()
     pic.save('images/lobby.png')
     im = Image.open('images/lobby.png')
@@ -66,10 +68,12 @@ def t_register():
         pyautogui.click('images/lobby/mainchat.png')
     else:
         pyautogui.click(115, 732)
+    if pyautogui.locateOnScreen('images/lobby/lobby.png') != None:
+        pyautogui.click('images/lobby/lobby.png')
     if pyautogui.locateOnScreen('images/lobby/name.png') != None:
         nloc = pyautogui.locateOnScreen('images/lobby/name.png')
         for i in range(1,5):
-            pyautogui.click(nloc[0], nloc[1]+5+i*22, clicks = 2)
+            pyautogui.click(nloc[0], nloc[1]+5+i*22, clicks = 2, interval = 0.25)
             if pyautogui.locateOnScreen('images/lobby/registerfree.png') != None:
                 pyautogui.click('images/lobby/registerfree.png')
                 if pyautogui.locateOnScreen('images/lobby/register.png') != None:

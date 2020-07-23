@@ -8,6 +8,9 @@ from decision_making import algo
 from remote import discord, dc_result
 from PIL import Image, ImageEnhance, ImageFilter
 
+password = 'chawick03'
+secure = 1
+
 def screenshot(max):
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
@@ -21,15 +24,15 @@ def screenshot(max):
         pic.save('images/card1.png')
         pic = pyautogui.screenshot(region=(434, 79, 26, 34))
         pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 272, 26, 34))
+    pic = pyautogui.screenshot(region=(259, 271, 26, 35))
     pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 272, 26, 34))
+    pic = pyautogui.screenshot(region=(339, 271, 26, 35))
     pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 272, 26, 34))
+    pic = pyautogui.screenshot(region=(419, 271, 26, 35))
     pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 272, 26, 34))
+    pic = pyautogui.screenshot(region=(499, 271, 26, 35))
     pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 272, 26, 34))
+    pic = pyautogui.screenshot(region=(579, 271, 26, 35))
     pic.save('images/board5.png')
     pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
@@ -47,9 +50,9 @@ def set_position(max):
         r,g,b=pix[457,127+5]
     if max == 6:
         r,g,b=pix[457,127+5]
-    #print (r)
+    #print (r,g,b)
     #pyautogui.click(457,127+5)
-    if r < 95 and pyautogui.locateOnScreen('images/button/seat.png') != None:
+    if r < 200 and pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
         print(r)
         if max == 8:
@@ -67,6 +70,13 @@ def sit_back():
         pyautogui.click(511,19)
     if pyautogui.locateOnScreen('images/button/sitback.png') != None:
         pyautogui.click('images/button/sitback.png')
+
+def log_in():
+    if pyautogui.locateOnScreen('images/button/login.png') != None:
+        if pyautogui.locateOnScreen('images/button/psw.png') != None:
+            pyautogui.click('images/button/psw.png')
+            pyautogui.write(password, interval=0.25)
+            pyautogui.press('enter')
 
 def get_nplayermax(max):
     nplayer = 0
@@ -110,10 +120,10 @@ def get_nplayer(max):
         pos = [[134,177],[768,177],[767,484],[453,534],[134,484]]
     for i in range (0,max - 1):
         r,g,b=pix[pos[i][0],pos[i][1]-50]
-        if (r+2>b and r-2<b and b+2>g and b-2<g and r > 200):
+        if (r+5>b and r-10<b and b+10>g and b-10<g and r > 200):
             nplayer += 1
         #else:
-        #    print('player not found : '+str(i),r)
+        #    print('player not found : '+str(i),r,g,b)
     return(nplayer+1)
 
 def get_pos(max):
@@ -162,36 +172,40 @@ def get_symbol(file_name):
     return('N')
 
 def read_data(file_name, en):
-    img = Image.open(file_name).convert('LA')
-    enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(en)
-    img = img.filter(ImageFilter.GaussianBlur(radius = 0.3))
-    img.save('images/greyscale.png')
-    pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
-    customconf = r'-c tessedit_char_whitelist=B.01234567859 --oem 3 --psm 6'
-    return (pytesseract.image_to_string('images/greyscale.png', config=customconf))
+    if secure == 0:
+        img = Image.open(file_name).convert('LA')
+        enhancer = ImageEnhance.Contrast(img)
+        img = enhancer.enhance(en)
+        img = img.filter(ImageFilter.GaussianBlur(radius = 0.3))
+        img.save('images/greyscale.png')
+        pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
+        #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
+        customconf = r'-c tessedit_char_whitelist=B.01234567859 --oem 3 --psm 6'
+        return (pytesseract.image_to_string('images/greyscale.png', config=customconf))
+    return 'error'
 
 def read_card(file_name, en):
-    img = Image.open(file_name).convert('LA')
-    enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(en)
-    #img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
-    img.save('images/greyscalecard.png')
-    pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
-    customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
-    string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
-    if not string and en < 5:
-        return (read_card(file_name, en + 0.5))
-    if not string:
-        #error read for 8
-        shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
-        print('read error')
-        return '8'
-    if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
-        return ('T')
-    return (string[0])
+    if secure == 0:
+        img = Image.open(file_name).convert('LA')
+        enhancer = ImageEnhance.Contrast(img)
+        img = enhancer.enhance(en)
+        #img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
+        img.save('images/greyscalecard.png')
+        pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
+        #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
+        customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
+        string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
+        if not string and en < 5:
+            return (read_card(file_name, en + 1))
+        if not string:
+            #error read for 8
+            shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
+            print('read error')
+            return '8'
+        if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
+            return ('T')
+        return (string[0])
+    return 'error'
 
 def action(bet, act):
     #allin = 0, check = 1, call = 2, fold = 3, bet = 4 
@@ -273,6 +287,7 @@ class Data():
     auto_register = 0
 
 if __name__ == "__main__":
+    secure = 0
     sys.tracebacklimit = 0
     exit = 0
     if len(sys.argv) > 1 and sys.argv[1] == '-dc':
@@ -284,22 +299,21 @@ if __name__ == "__main__":
     max = get_max()
     d = Data(max)
     while exit == 0:
+        log_in()
         sit_back()
         max = get_max()
         new_table(max)
         set_position(max)
-        screenshot(max)
-        
+        screenshot(max) 
         im = Image.open('images/screenshot.png')
         pix = im.load()
         r,g,b=pix[513,643]
         if g < 20:
-        #if pyautogui.locateOnScreen('images/button/bet.png') != None or pyautogui.locateOnScreen('images/button/fold.png') != None:
-            #screenshot(max)
             init_data(d, max)
             print_data(d)
-            bet, act = algo(d)
-            print(bet, act)
+            secure = 1
+            secure, bet, act = algo(d)
+            print(bet, act) 
             action(bet , act)
         if dc == 1:
             exit, d.auto_register = discord(d)
@@ -307,17 +321,14 @@ if __name__ == "__main__":
         #print (r)
         if r >= 188 and r < 192:
             print(r)
-        #if pyautogui.locateOnScreen('images/button/finish.png') != None:
             pic = pyautogui.screenshot(region=(164, 161, 579, 422))
             pic.save('images/result.png')
             if dc == 1:
                 dc_result()
-            pyautogui.click(528, 506)
+            pyautogui.click(528, 501)
             
 '''
 afer : 
-new command autoregister
 get_pos
 fix errors
-cmd register
 '''

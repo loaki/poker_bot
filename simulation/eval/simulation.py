@@ -5,6 +5,7 @@ import multiprocessing
 import os
 import random
 import time
+import sys
 
 import pokershell.config as config
 import pokershell.eval.manager as manager
@@ -88,10 +89,7 @@ class AbstractSimulator(metaclass=abc.ABCMeta):
 class ParallelSimulatorMixin:
     @classmethod
     def _simulate_parallel(cls, sim_fc, data):
-        '''
         with contextlib.closing(multiprocessing.Pool()) as pool:
-            #test
-            sys.tracebacklimit = 0 
             partial_results = pool.map(sim_fc, data)
             win, tie, lose = 0, 0, 0
             beating, winning = [0] * len(model.Hand), [0] * len(model.Hand)
@@ -102,7 +100,7 @@ class ParallelSimulatorMixin:
                 cls._add_list(result.beating_hands, beating)
                 cls._add_list(result.winning_hands, winning)
             return SimulationResult(win, tie, lose, winning, beating)
-            '''
+            
         partial_results = map(sim_fc, data)
         win, tie, lose = 0, 0, 0
         beating, winning = [0] * len(model.Hand), [0] * len(model.Hand)
@@ -133,13 +131,13 @@ class BruteForceSimulator(AbstractSimulator, ParallelSimulatorMixin):
 
     def __init__(self):
         super().__init__()
+        sys.tracebacklimit = 0
         self._manager = manager.EvaluatorManager()
 
     def _process(self, cards, generated):
         return self._simulate_river(cards + generated)
 
     def simulate(self, player_num, *cards):
-        print('\nsimulate bf\n')
         assert isinstance(player_num, int)
         if player_num != 2:
             raise ValueError('Only 2 players are supported')
@@ -149,10 +147,8 @@ class BruteForceSimulator(AbstractSimulator, ParallelSimulatorMixin):
         if unknown_count:
             fc = functools.partial(self._process, cards)
             combinations = model.Card.all_combinations(deck_cards, unknown_count)
-            print('\nparallel\n')
             return self._simulate_parallel(fc, combinations)
         else:
-            print('\nriver\n')
             return self._simulate_river(cards)
 
     def _simulate_river(self, cards):
@@ -187,21 +183,18 @@ class MonteCarloSimulator(AbstractSimulator, ParallelSimulatorMixin):
     sim_cycle = config.register_option(name='sim-cycle', value=1, type=int, short='-t',
                                        description='Duration of Monte Carlo '
                                                    'simulation in seconds')
-    print('\nla ?\n')
     def __init__(self, sim_cycle=1):
         super().__init__()
-        print('\nla2 ?\n')
         self._manager = manager.EvaluatorManager()
         if sim_cycle > 120:
             raise ValueError('Too long simulation %f seconds' % sim_cycle)
         self._sim_cycle = sim_cycle
 
     def simulate(self, player_num, *cards):
-        print('\nsimulate mc\n')
+        sys.tracebacklimit = 0
         assert isinstance(player_num, int)
         start_data = (cards,) * multiprocessing.cpu_count() 
         fc = functools.partial(self._sample, player_num, self._sim_cycle)
-        print('\nparallel\n')
         return self._simulate_parallel(fc, start_data)
 
     def _sample(self, player_num, sim_cycle, cards):
