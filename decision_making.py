@@ -61,6 +61,13 @@ def shove(d):
     return (0, 0, 3)
 
 def algo(d):
+    #allin = 0, check = 1, call = 2, fold = 3, bet = 4 
+    if (d.card1.v == d.card2.v and (d.card1.v == 'A' or d.card1.v == 'K' or d.card1.v == 'Q' or d.card1.v == 'J' or d.card1.v == 'T')):
+        return (0, 0, 0)
+    if (d.card1.v == 'A' and (d.card2.v == 'A' or d.card2.v == 'K' or d.card2.v == 'Q' or d.card2.v == 'J')):
+        return (0, 0, 0)
+    if (d.card2.v == 'A' and (d.card1.v == 'A' or d.card1.v == 'K' or d.card1.v == 'Q' or d.card1.v == 'J')):
+        return (0, 0, 0)
     #return (shove(d))
     cards = d.card1.v+d.card1.s+d.card2.v+d.card2.s
     if d.board1.v != '':
@@ -82,12 +89,16 @@ def algo(d):
     simulator = sim_manager.find_simulator(state.player_num or config.player_num.value, *state.cards)
     wr = simulate(state, simulator)
     print ('win rate :',wr)
-    return (shove(d))
+    #return (shove(d))
 
-    if (float(d.tocall) > float((float(d.tpot)+float(d.tocall))*float(wr))):
-        return(0, 0, 3)
     bet = (float(d.tpot)*float(wr))/(1-float(wr))
-    return (0, round(bet, 1), 4)
+    if bet < float(d.tocall):
+        return (0, round(bet, 1), 3)
+    if (bet*0.7 < 2*float(d.tocall)) or (bet*0.7 < float(d.tpot) / 3):
+        if float(d.tocall) == 0:
+            return (0, round(bet, 1), 1)
+        return (0, round(bet, 1), 2)
+    return (0, round(bet, 1)*0.7, 4)
 
 
 if __name__ == "__main__":

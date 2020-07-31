@@ -3,6 +3,7 @@ import pytesseract
 import os
 import sys
 import shutil
+import time
 
 from decision_making import algo
 from remote import discord, dc_result
@@ -36,9 +37,9 @@ def screenshot(max):
     pic.save('images/board5.png')
     pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
-    pic = pyautogui.screenshot(region=(498, 402, 70, 21))
+    pic = pyautogui.screenshot(region=(418, 402, 150, 21))
     pic.save('images/totalpot.png')
-    pic = pyautogui.screenshot(region=(415, 618, 43, 20))
+    pic = pyautogui.screenshot(region=(400, 618, 80, 20))
     pic.save('images/tocall.png')
     pic = pyautogui.screenshot(region=(409, 153, 80, 25))
     pic.save('images/stack.png')
@@ -52,7 +53,7 @@ def set_position(max):
         r,g,b=pix[457,127+5]
     #print (r,g,b)
     #pyautogui.click(457,127+5)
-    if r < 200 and pyautogui.locateOnScreen('images/button/seat.png') != None:
+    if r < 95 and pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
         print(r)
         if max == 8:
@@ -73,10 +74,13 @@ def sit_back():
 
 def log_in():
     if pyautogui.locateOnScreen('images/button/login.png') != None:
+        pyautogui.click(115, 732)
         if pyautogui.locateOnScreen('images/button/psw.png') != None:
             pyautogui.click('images/button/psw.png')
             pyautogui.write(password, interval=0.25)
             pyautogui.press('enter')
+        if pyautogui.locateOnScreen('images/button/ok.png') != None:
+            pyautogui.click('images/button/ok.png')
 
 def get_nplayermax(max):
     nplayer = 0
@@ -195,7 +199,7 @@ def read_card(file_name, en):
         #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
         customconf = r'-c tessedit_char_whitelist=AKQJ0123456789 --oem 3 --psm 6'
         string = pytesseract.image_to_string('images/greyscalecard.png', config=customconf)
-        if not string and en < 5:
+        if not string and en < 4:
             return (read_card(file_name, en + 1))
         if not string:
             #error read for 8
@@ -254,12 +258,12 @@ def print_data(d):
         d.board1.v+d.board1.s, d.board2.v+d.board2.s, \
         d.board3.v+d.board3.s, d.board4.v+d.board4.s, \
         d.board5.v+d.board5.s)
-    print('max      : '+str(d.max))
-    print('nplayer  : '+str(d.nplayer))
-    print('pot      : '+str(d.pot))
-    print('tpot     : '+str(d.tpot))
-    print('to call  : '+str(d.tocall))
-    print('stack    : '+str(d.stack))
+    print('max      :',d.max)
+    print('nplayer  :',d.nplayer)
+    print('pot      :',d.pot)
+    print('tpot     :',d.tpot)
+    print('to call  :',d.tocall)
+    print('stack    :',d.stack)
 
 class Card():
     v = ''
@@ -290,6 +294,7 @@ if __name__ == "__main__":
     secure = 0
     sys.tracebacklimit = 0
     exit = 0
+    actions = ['allin','check','call','fold','bet']
     if len(sys.argv) > 1 and sys.argv[1] == '-dc':
         dc = 1
     else:
@@ -309,11 +314,14 @@ if __name__ == "__main__":
         pix = im.load()
         r,g,b=pix[513,643]
         if g < 20:
+            start_time = time.time()
             init_data(d, max)
             print_data(d)
             secure = 1
             secure, bet, act = algo(d)
-            print(bet, act) 
+            print('bet      :',bet)
+            print('action   :',actions[act])
+            print('time     :',time.time() - start_time)
             action(bet , act)
         if dc == 1:
             exit, d.auto_register = discord(d)
@@ -329,6 +337,7 @@ if __name__ == "__main__":
             
 '''
 afer : 
+call bug
 get_pos
 get 2 cursor
 fix errors
