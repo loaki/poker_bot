@@ -88,7 +88,7 @@ def algo(d):
     sim_manager = simulation.SimulatorManager()
     simulator = sim_manager.find_simulator(state.player_num or config.player_num.value, *state.cards)
     wr = simulate(state, simulator)
-    print ('win rate :',wr)
+    print ('win rate :',round(wr*100,2),'%')
     #return (shove(d))
 
     bet = (float(d.tpot)*float(wr))/(1-float(wr))
@@ -98,7 +98,7 @@ def algo(d):
         if float(d.tocall) == 0:
             return (0, round(bet, 1), 1)
         return (0, round(bet, 1), 2)
-    return (0, round(bet, 1)*0.7, 4)
+    return (0, round(bet*0.7, 1), 4)
 
 
 if __name__ == "__main__":

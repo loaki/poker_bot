@@ -73,7 +73,7 @@ def t_register():
     if pyautogui.locateOnScreen('images/lobby/name.png') != None:
         nloc = pyautogui.locateOnScreen('images/lobby/name.png')
         for i in range(1,5):
-            pyautogui.click(nloc[0], nloc[1]+5+i*22, clicks = 2, interval = 0.25)
+            pyautogui.click(nloc[0], nloc[1]+5+i*22, clicks = 2, interval = 0.2)
             if pyautogui.locateOnScreen('images/lobby/registerfree.png') != None:
                 pyautogui.click('images/lobby/registerfree.png')
                 if pyautogui.locateOnScreen('images/lobby/register.png') != None:

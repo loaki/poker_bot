@@ -4,6 +4,7 @@ import os
 import sys
 import shutil
 import time
+import msvcrt
 
 from decision_making import algo
 from remote import discord, dc_result
@@ -25,21 +26,21 @@ def screenshot(max):
         pic.save('images/card1.png')
         pic = pyautogui.screenshot(region=(434, 79, 26, 34))
         pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 271, 26, 35))
+    pic = pyautogui.screenshot(region=(259, 271, 28, 35))
     pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 271, 26, 35))
+    pic = pyautogui.screenshot(region=(339, 271, 28, 35))
     pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 271, 26, 35))
+    pic = pyautogui.screenshot(region=(419, 271, 28, 35))
     pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 271, 26, 35))
+    pic = pyautogui.screenshot(region=(499, 271, 28, 35))
     pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 271, 26, 35))
+    pic = pyautogui.screenshot(region=(579, 271, 28, 35))
     pic.save('images/board5.png')
     pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
     pic = pyautogui.screenshot(region=(418, 402, 150, 21))
     pic.save('images/totalpot.png')
-    pic = pyautogui.screenshot(region=(400, 618, 80, 20))
+    pic = pyautogui.screenshot(region=(400, 618, 70, 20))
     pic.save('images/tocall.png')
     pic = pyautogui.screenshot(region=(409, 153, 80, 25))
     pic.save('images/stack.png')
@@ -171,7 +172,7 @@ def get_symbol(file_name):
     if (r <= 4):
         return('s')
     if file_name == 'images/card1.png' or file_name == 'images/card2.png':
-        shutil.copy(file_name, 'images/errors/s'+file_name[7:12]+'.png')
+        #shutil.copy(file_name, 'images/errors/s'+file_name[7:12]+'.png')
         print('read error')
     return('N')
 
@@ -180,7 +181,7 @@ def read_data(file_name, en):
         img = Image.open(file_name).convert('LA')
         enhancer = ImageEnhance.Contrast(img)
         img = enhancer.enhance(en)
-        img = img.filter(ImageFilter.GaussianBlur(radius = 0.3))
+        img = img.filter(ImageFilter.GaussianBlur(radius = 0.4))
         img.save('images/greyscale.png')
         pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
         #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
@@ -203,7 +204,7 @@ def read_card(file_name, en):
             return (read_card(file_name, en + 1))
         if not string:
             #error read for 8
-            shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
+            #shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
             print('read error')
             return '8'
         if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
@@ -293,48 +294,60 @@ class Data():
 if __name__ == "__main__":
     secure = 0
     sys.tracebacklimit = 0
-    exit = 0
-    actions = ['allin','check','call','fold','bet']
-    if len(sys.argv) > 1 and sys.argv[1] == '-dc':
-        dc = 1
-    else:
-        dc = 0
-    pic = pyautogui.screenshot()
-    pic.save('images/screenshot.png')
-    max = get_max()
-    d = Data(max)
-    while exit == 0:
-        log_in()
-        sit_back()
-        max = get_max()
-        new_table(max)
-        set_position(max)
-        screenshot(max) 
-        im = Image.open('images/screenshot.png')
-        pix = im.load()
-        r,g,b=pix[513,643]
-        if g < 20:
-            start_time = time.time()
-            init_data(d, max)
-            print_data(d)
-            secure = 1
-            secure, bet, act = algo(d)
-            print('bet      :',bet)
-            print('action   :',actions[act])
-            print('time     :',time.time() - start_time)
-            action(bet , act)
-        if dc == 1:
-            exit, d.auto_register = discord(d)
-        r,g,b=pix[453,254]
-        #print (r)
-        if r >= 188 and r < 192:
-            print(r)
-            pic = pyautogui.screenshot(region=(164, 161, 579, 422))
-            pic.save('images/result.png')
-            if dc == 1:
-                dc_result()
-            pyautogui.click(528, 501)
-            
+    q = 0
+    while q == 0:
+        try:
+            actions = ['allin','check','call','fold','bet']
+            if len(sys.argv) > 1 and sys.argv[1] == '-dc':
+                dc = 1
+            else:
+                dc = 0
+            pic = pyautogui.screenshot()
+            pic.save('images/screenshot.png')
+            max = get_max()
+            d = Data(max)
+            while q == 0:
+                if msvcrt.kbhit():
+                    print('key pressed, exiting...')
+                    q = 1
+                    sys.exit()
+                log_in()
+                sit_back()
+                max = get_max()
+                new_table(max)
+                set_position(max)
+                screenshot(max) 
+                im = Image.open('images/screenshot.png')
+                pix = im.load()
+                r,g,b=pix[513,643]
+                if g < 20:
+                    start_time = time.time()
+                    init_data(d, max)
+                    print_data(d)
+                    secure = 1
+                    secure, bet, act = algo(d)
+                    print('bet      :',bet)
+                    print('action   :',actions[act])
+                    print('time     :',round(time.time() - start_time,1),'s')
+                    action(bet , act)
+                if dc == 1:
+                    q, d.auto_register = discord(d)
+                r,g,b=pix[453,254]
+                #print (r)
+                if r >= 188 and r < 192:
+                    print(r)
+                    pic = pyautogui.screenshot(region=(164, 161, 579, 422))
+                    pic.save('images/result.png')
+                    if dc == 1:
+                        dc_result()
+                    pyautogui.click(528, 501)
+        except:
+            continue
+
+
+
+
+
 '''
 afer : 
 call bug
