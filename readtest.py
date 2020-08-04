@@ -27,15 +27,16 @@ def read_card(file_name, en):
     img = Image.open(file_name).convert('L')
     enhancer = ImageEnhance.Contrast(img)
     img = enhancer.enhance(float(en))
-    img = img.filter(ImageFilter.GaussianBlur(radius = 0.6))
+    img = img.filter(ImageFilter.GaussianBlur(radius = 0.5))
     img.save('images/errors/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
     customconf = r'-c tessedit_char_whitelist=B.0123456789 --oem 3 --psm 6'
     string = pytesseract.image_to_string('images/errors/greyscalecard.png', config=customconf)
-    return (string)
-    if not string:
+    #return (string)
+    if not string and float(en) < 6:
         print('read error')
-        return ''
+        return read_card(file_name, float(en) + 0.5)
+    print(en)
     if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
         return ('T')
     return (string[0])

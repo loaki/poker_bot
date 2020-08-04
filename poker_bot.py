@@ -10,7 +10,6 @@ from decision_making import algo
 from remote import discord, dc_result
 from PIL import Image, ImageEnhance, ImageFilter
 
-password = 'chawick03'
 secure = 1
 
 def screenshot(max):
@@ -26,15 +25,15 @@ def screenshot(max):
         pic.save('images/card1.png')
         pic = pyautogui.screenshot(region=(434, 79, 26, 34))
         pic.save('images/card2.png')
-    pic = pyautogui.screenshot(region=(259, 271, 28, 35))
+    pic = pyautogui.screenshot(region=(259, 271, 28, 34))
     pic.save('images/board1.png')
-    pic = pyautogui.screenshot(region=(339, 271, 28, 35))
+    pic = pyautogui.screenshot(region=(339, 271, 28, 34))
     pic.save('images/board2.png')
-    pic = pyautogui.screenshot(region=(419, 271, 28, 35))
+    pic = pyautogui.screenshot(region=(419, 271, 28, 34))
     pic.save('images/board3.png')
-    pic = pyautogui.screenshot(region=(499, 271, 28, 35))
+    pic = pyautogui.screenshot(region=(499, 271, 28, 34))
     pic.save('images/board4.png')
-    pic = pyautogui.screenshot(region=(579, 271, 28, 35))
+    pic = pyautogui.screenshot(region=(579, 271, 28, 34))
     pic.save('images/board5.png')
     pic = pyautogui.screenshot(region=(470, 380, 80, 25))
     pic.save('images/pot.png')
@@ -56,7 +55,7 @@ def set_position(max):
     #pyautogui.click(457,127+5)
     if r < 95 and pyautogui.locateOnScreen('images/button/seat.png') != None:
         pyautogui.click('images/button/seat.png')
-        print(r)
+        #print(r)
         if max == 8:
             pyautogui.click(457,132)
         if max == 6:
@@ -73,12 +72,12 @@ def sit_back():
     if pyautogui.locateOnScreen('images/button/sitback.png') != None:
         pyautogui.click('images/button/sitback.png')
 
-def log_in():
+def log_in(psw):
     if pyautogui.locateOnScreen('images/button/login.png') != None:
         pyautogui.click(115, 732)
         if pyautogui.locateOnScreen('images/button/psw.png') != None:
             pyautogui.click('images/button/psw.png')
-            pyautogui.write(password, interval=0.25)
+            pyautogui.write(psw, interval=0.25)
             pyautogui.press('enter')
         if pyautogui.locateOnScreen('images/button/ok.png') != None:
             pyautogui.click('images/button/ok.png')
@@ -171,9 +170,9 @@ def get_symbol(file_name):
         return('c')
     if (r <= 4):
         return('s')
-    if file_name == 'images/card1.png' or file_name == 'images/card2.png':
+    #if file_name == 'images/card1.png' or file_name == 'images/card2.png':
         #shutil.copy(file_name, 'images/errors/s'+file_name[7:12]+'.png')
-        print('read error')
+        #print('read error')
     return('N')
 
 def read_data(file_name, en):
@@ -181,7 +180,7 @@ def read_data(file_name, en):
         img = Image.open(file_name).convert('LA')
         enhancer = ImageEnhance.Contrast(img)
         img = enhancer.enhance(en)
-        img = img.filter(ImageFilter.GaussianBlur(radius = 0.4))
+        img = img.filter(ImageFilter.GaussianBlur(radius = 0.34))
         img.save('images/greyscale.png')
         pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
         #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
@@ -194,7 +193,7 @@ def read_card(file_name, en):
         img = Image.open(file_name).convert('LA')
         enhancer = ImageEnhance.Contrast(img)
         img = enhancer.enhance(en)
-        #img = img.filter(ImageFilter.GaussianBlur(radius = 0.2))
+        img = img.filter(ImageFilter.GaussianBlur(radius = 0.5))
         img.save('images/greyscalecard.png')
         pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
         #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
@@ -205,7 +204,7 @@ def read_card(file_name, en):
         if not string:
             #error read for 8
             #shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
-            print('read error')
+            #print('read error')
             return '8'
         if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
             return ('T')
@@ -295,6 +294,7 @@ if __name__ == "__main__":
     secure = 0
     sys.tracebacklimit = 0
     q = 0
+    psw = input('enter your password : ')
     while q == 0:
         try:
             actions = ['allin','check','call','fold','bet']
@@ -311,7 +311,7 @@ if __name__ == "__main__":
                     print('key pressed, exiting...')
                     q = 1
                     sys.exit()
-                log_in()
+                log_in(psw)
                 sit_back()
                 max = get_max()
                 new_table(max)
