@@ -16,14 +16,14 @@ def screenshot(max):
     pic = pyautogui.screenshot()
     pic.save('images/screenshot.png')
     if (max == 8):
-        pic = pyautogui.screenshot(region=(410, 78, 24, 34))
+        pic = pyautogui.screenshot(region=(410, 78, 24, 35))
         pic.save('images/card1.png')
-        pic = pyautogui.screenshot(region=(435, 78, 25, 34))
+        pic = pyautogui.screenshot(region=(435, 78, 25, 35))
         pic.save('images/card2.png')
     if (max == 6):
-        pic = pyautogui.screenshot(region=(410, 79, 24, 34))
+        pic = pyautogui.screenshot(region=(410, 79, 24, 35))
         pic.save('images/card1.png')
-        pic = pyautogui.screenshot(region=(434, 79, 26, 34))
+        pic = pyautogui.screenshot(region=(434, 79, 26, 35))
         pic.save('images/card2.png')
     pic = pyautogui.screenshot(region=(259, 271, 28, 35))
     pic.save('images/board1.png')
@@ -163,7 +163,7 @@ def get_number(file_name, en):
 def get_symbol(file_name):
     im = Image.open(file_name)
     pix = im.load()
-    r,g,b=pix[10,33]
+    r,g,b=pix[10,34]
     if (r >= 225):
         return('d')
     if (r >= 160):
