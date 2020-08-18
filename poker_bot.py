@@ -73,6 +73,8 @@ def sit_back():
         pyautogui.click('images/button/sitback.png')
 
 def log_in(psw):
+    if pyautogui.locateOnScreen('images/button/disconnect.png') != None:
+        pyautogui.click('images/button/disconnect.png')
     if pyautogui.locateOnScreen('images/button/login.png') != None:
         pyautogui.click(115, 732)
         if pyautogui.locateOnScreen('images/button/psw.png') != None:
