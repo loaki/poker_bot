@@ -4,6 +4,7 @@ import os
 
 from lobby import t_info, t_register
 from PIL import Image, ImageEnhance, ImageFilter
+from datetime import datetime
 
 def read_cmd(file_name):
     img = Image.open(file_name).convert('L')
@@ -33,6 +34,14 @@ def dc_screenshot():
             pyautogui.press('enter', interval = 0.25)
 
 def dc_result():
+    if pyautogui.locateOnScreen('images/discord/cancel.png') != None:
+        pyautogui.click('images/discord/cancel.png')
+    if pyautogui.locateOnScreen('images/discord/shortcut.png') != None:
+        pyautogui.click('images/discord/shortcut.png')
+    if pyautogui.locateOnScreen('images/discord/shortcut2.png') != None:
+        pyautogui.click('images/discord/shortcut2.png')
+    if pyautogui.locateOnScreen('images/discord/server.png') != None:
+        pyautogui.click('images/discord/server.png')
     if pyautogui.locateOnScreen('images/discord/results.png') != None:
         pyautogui.click('images/discord/results.png')
         if pyautogui.locateOnScreen('images/discord/+.png') != None:
@@ -40,6 +49,7 @@ def dc_result():
             pyautogui.write('result.png')
             pyautogui.press('enter', interval = 0.25)
             pyautogui.press('enter')
+    #clear
     if pyautogui.locateOnScreen('images/lobby/mainchat.png') != None:
         pyautogui.click('images/lobby/mainchat.png')
     else:
@@ -62,6 +72,7 @@ def dc_result():
             pyautogui.click('images/lobby/lobby.png')
 
 def discord(d):
+    time = datetime.now().strftime("%M")
     if pyautogui.locateOnScreen('images/discord/cancel.png') != None:
         pyautogui.click('images/discord/cancel.png')
     if pyautogui.locateOnScreen('images/discord/shortcut.png') != None:
@@ -91,7 +102,7 @@ def discord(d):
                     dc_write('on')
                 if d.auto_register == 0:
                     dc_write('off')
-            if d.auto_register == 1:
+            if d.auto_register == 1 and int(time)%15 == 0:
                 t_register()
             if cmd == 'register':
                 dc_write('ok')

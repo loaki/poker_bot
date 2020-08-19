@@ -340,9 +340,10 @@ if __name__ == "__main__":
                     print(r)
                     pic = pyautogui.screenshot(region=(164, 161, 579, 422))
                     pic.save('images/result.png')
+                    pyautogui.click(528, 501)
+                    pyautogui.click(528, 483)
                     if dc == 1:
                         dc_result()
-                    pyautogui.click(528, 501)
         except:
             continue
 
