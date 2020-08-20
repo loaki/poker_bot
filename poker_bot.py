@@ -83,6 +83,8 @@ def log_in(psw):
             pyautogui.press('enter')
         if pyautogui.locateOnScreen('images/button/ok.png') != None:
             pyautogui.click('images/button/ok.png')
+    while pyautogui.locateOnScreen('images/button/close.png') != None:
+        pyautogui.click('images/button/close.png')
 
 def get_nplayermax(max):
     nplayer = 0
