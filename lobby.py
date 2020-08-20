@@ -17,7 +17,7 @@ def t_screenshot():
     if pyautogui.locateOnScreen('images/lobby/info.png') != None:
         iloc = pyautogui.locateOnScreen('images/lobby/info.png')
         if iloc != None:
-            pic = pyautogui.screenshot(region=(iloc[0], iloc[1], 1365, 165))
+            pic = pyautogui.screenshot(region=(iloc[0], iloc[1], 1230, 165))
             pic.save('images/tinfo.png')
         if pyautogui.locateOnScreen('images/discord/shortcut.png') != None:
             pyautogui.click('images/discord/shortcut.png')
