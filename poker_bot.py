@@ -76,7 +76,7 @@ def log_in(psw):
     if pyautogui.locateOnScreen('images/button/disconnect.png') != None:
         pyautogui.click('images/button/disconnect.png')
     if pyautogui.locateOnScreen('images/button/login.png') != None:
-        pyautogui.click(115, 732)
+        pyautogui.click(115, 792)
         if pyautogui.locateOnScreen('images/button/psw.png') != None:
             pyautogui.click('images/button/psw.png')
             pyautogui.write(psw, interval=0.25)
