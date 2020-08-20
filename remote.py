@@ -2,7 +2,7 @@ import pyautogui
 import pytesseract
 import os
 
-from lobby import t_info, t_register
+from lobby import t_info, t_register, t_check
 from PIL import Image, ImageEnhance, ImageFilter
 from datetime import datetime
 
@@ -49,7 +49,6 @@ def dc_result():
             pyautogui.write('result.png')
             pyautogui.press('enter', interval = 0.25)
             pyautogui.press('enter')
-    #clear
     if pyautogui.locateOnScreen('images/lobby/mainchat.png') != None:
         pyautogui.click('images/lobby/mainchat.png')
     else:
