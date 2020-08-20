@@ -6,7 +6,9 @@ while 1:
         exit
 
 
-    MOUSE_X, MOUSE_Y = pyautogui.position()
-    PIXEL = pyautogui.screenshot(region=(MOUSE_X, MOUSE_Y, 1, 1))
-    COLOR = PIXEL.getcolors()
-    print("%d, %d : %s"%(MOUSE_X, MOUSE_Y, COLOR))
+    x, y = pyautogui.position()
+    pix = pyautogui.screenshot(region=(x, y, 1, 1))
+    color = pix.getpixel((0,0))
+    print("%d, %d : %s"%(x, y, color))
+    #if color[1] == 151:
+    #    pyautogui.click()
