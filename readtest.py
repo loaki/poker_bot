@@ -3,6 +3,7 @@ import pytesseract
 import os
 import sys
 import shutil
+import random
 
 from PIL import Image, ImageEnhance, ImageFilter
 
@@ -23,29 +24,58 @@ def get_symbol(file_name):
         print('read error')
     return(r)
 
-def read_card(file_name, en):
+def pixelProcRed(intensity):
+
+    return intensity
+
+def pixelProcBlue(intensity):
+
+    return intensity
+
+def pixelProcGreen(intensity):
+
+    return intensity
+
+def read_card(file_name, en, th):
     img = Image.open(file_name).convert('L')
+    img = img.point(lambda p: p > th and 255)
     enhancer = ImageEnhance.Contrast(img)
     img = enhancer.enhance(float(en))
-    img = img.filter(ImageFilter.GaussianBlur(radius = 0.5))
+    #img = sharp.enhance(1)
+    #img = img.filter(ImageFilter.GaussianBlur(radius = 0))
+
     img.save('images/errors/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    customconf = r'-c tessedit_char_whitelist=B.0123456789 --oem 3 --psm 6'
+    customconf = r'-c tessedit_char_whitelist=" 0123456789" --psm 10'
     string = pytesseract.image_to_string('images/errors/greyscalecard.png', config=customconf)
-    #return (string)
+    print(en, th, ' = ',string)
+    return (string)
+
+    '''
     if not string and float(en) < 6:
         print('read error')
-        return read_card(file_name, float(en) + 0.5)
-    print(en)
+        return read_card(file_name, float(en) + 0.1)
+    print(en, string)
+    return read_card(file_name, float(en) + 0.1)
+    return string
     if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
         return ('T')
     return (string[0])
-
+    '''
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         print(sys.argv[1])
         file = sys.argv[1]
     else :
         print('no file specified')
-    #print(get_symbol(file))
+
+    print(read_card(file, int(sys.argv[2]), int(sys.argv[3])))
+    '''
+    en = random.randint(0, 20)
+    th = random.randint(80, 160)
+    while (read_card(file, en, th) != sys.argv[2]):
+        en = random.randint(0, 20)
+        th = random.randint(80, 160)
+
     print(read_card(file, sys.argv[2]))
+    '''

@@ -4,8 +4,7 @@ import os
 import sys
 import shutil
 import time
-import msvcrt
-
+import keyboard
 from decision_making import algo
 from remote import discord, dc_result
 from PIL import Image, ImageEnhance, ImageFilter
@@ -306,13 +305,17 @@ if __name__ == "__main__":
                 dc = 1
             else:
                 dc = 0
+            if len(sys.argv) > 1 and sys.argv[1] == '-na':
+                na = 1
+            else:
+                na = 0
             pic = pyautogui.screenshot()
             pic.save('images/screenshot.png')
             max = get_max()
             d = Data(max)
             while q == 0:
-                if msvcrt.kbhit():
-                    print('key pressed, exiting...')
+                if keyboard.is_pressed('escape') == True:
+                    print('exiting...')
                     q = 1
                     sys.exit()
                 log_in(psw)
@@ -333,7 +336,8 @@ if __name__ == "__main__":
                     print('bet      :',bet)
                     print('action   :',actions[act])
                     print('time     :',round(time.time() - start_time,1),'s')
-                    action(bet , act)
+                    if na == 0:
+                        action(bet , act)
                 if dc == 1:
                     q, d.auto_register = discord(d)
                 r,g,b=pix[453,254]
