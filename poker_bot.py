@@ -4,6 +4,7 @@ import os
 import sys
 import shutil
 import time
+import re
 import keyboard
 from decision_making import algo
 from remote import discord, dc_result
@@ -113,7 +114,7 @@ def get_stack():
         pyautogui.click('images/button/allin.png')
     pic = pyautogui.screenshot(region=(534, 619, 120, 18))
     pic.save('images/stack.png')
-    return get_number('images/stack.png', 0.5)
+    return get_number('images/stack.png', -100, 100)
 
 def get_nplayer(max):
     nplayer = 0
@@ -145,15 +146,15 @@ def get_pos(max):
         if (r > 100):
             return (i)
 
-def get_number(file_name, en):
-    string = read_data(file_name, en)
+def get_number(file_name, en, th):
+    string = read_data(file_name, en, th)
     index_list = []
     del index_list[:]
     for i, x in enumerate(string):
         if x.isdigit() == True:
             index_list.append(i)
-    if not index_list and en < 5:
-        return get_number(file_name, en + 0.5)
+    if not index_list and th > 40:
+        return get_number(file_name, en, th - 40)
     if not index_list:
         return 0
     start = index_list[0]
@@ -178,17 +179,17 @@ def get_symbol(file_name):
         #print('read error')
     return('N')
 
-def read_data(file_name, en):
+def read_data(file_name, en, th):
     if secure == 0:
-        img = Image.open(file_name).convert('LA')
+        img = Image.open(file_name).convert('L')
+        img = img.point(lambda p: p > th and 255)
         enhancer = ImageEnhance.Contrast(img)
-        img = enhancer.enhance(en)
-        img = img.filter(ImageFilter.GaussianBlur(radius = 0.34))
+        img = enhancer.enhance(float(en))
         img.save('images/greyscale.png')
         pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-        #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
-        customconf = r'-c tessedit_char_whitelist=B.01234567859 --oem 3 --psm 6'
-        return (pytesseract.image_to_string('images/greyscale.png', config=customconf))
+        customconf = r'-c tessedit_char_whitelist="B.0123456789" --psm 10'
+        string = pytesseract.image_to_string('images/greyscale.png', config=customconf)
+        return (string)
     return 'error'
 
 def read_card(file_name, en):
@@ -196,7 +197,7 @@ def read_card(file_name, en):
         img = Image.open(file_name).convert('LA')
         enhancer = ImageEnhance.Contrast(img)
         img = enhancer.enhance(en)
-        img = img.filter(ImageFilter.GaussianBlur(radius = 0.5))
+        #img = img.filter(ImageFilter.GaussianBlur(radius = 0.5))
         img.save('images/greyscalecard.png')
         pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
         #TESSDATA_PREFIX:'C:/Program Files/Tesseract-OCR/tessdata'
@@ -205,10 +206,12 @@ def read_card(file_name, en):
         if not string and en < 4:
             return (read_card(file_name, en + 1))
         if not string:
-            #error read for 8
-            #shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
-            #print('read error')
-            return '8'
+            '''
+            error read for 8
+            shutil.copy(file_name, 'images/errors/v'+file_name[7:12]+'.png')
+            print('read error')
+            '''
+            return ('8')
         if (len(string) >= 2 and string[0] == '1' and string[1] == '0'):
             return ('T')
         return (string[0])
@@ -249,10 +252,10 @@ def init_data(d, max):
     d.board3 = init_card('images/board3.png')
     d.board4 = init_card('images/board4.png')
     d.board5 = init_card('images/board5.png')
-    d.pot = get_number('images/pot.png', 0.5)
-    d.tpot = get_number('images/totalpot.png', 3)
-    d.tocall = get_number('images/tocall.png', 0.5)
-    d.stack = get_number('images/stack.png', 0.5)
+    d.pot = get_number('images/pot.png', -100, 100)
+    d.tpot = get_number('images/totalpot.png', -100, 100)
+    d.tocall = get_number('images/tocall.png', -100, 100)
+    d.stack = get_number('images/stack.png', -100, 100)
 
 def print_data(d):
     print('--------------------')
@@ -287,10 +290,10 @@ class Data():
     board3 = Card('images/board3.png')
     board4 = Card('images/board4.png')
     board5 = Card('images/board5.png')
-    pot = get_number('images/pot.png', 0.5)
-    tpot = get_number('images/totalpot.png', 0.5)
-    tocall = get_number('images/tocall.png', 0.5)
-    stack = get_number('images/stack.png', 0.5)
+    pot = get_number('images/pot.png', -100, 100)
+    tpot = get_number('images/totalpot.png', -100, 100)
+    tocall = get_number('images/tocall.png', -100, 100)
+    stack = get_number('images/stack.png', -100, 100)
     auto_register = 0
 
 if __name__ == "__main__":
@@ -298,6 +301,7 @@ if __name__ == "__main__":
     sys.tracebacklimit = 0
     q = 0
     psw = input('enter your password : ')
+    print('press esc to quit')
     while q == 0:
         try:
             actions = ['allin','check','call','fold','bet']

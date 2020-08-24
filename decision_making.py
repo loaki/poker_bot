@@ -91,14 +91,19 @@ def algo(d):
     print ('win rate :',round(wr*100,2),'%')
     #return (shove(d))
 
+    tight = 0.8
+    tocall = float(d.tocall)
+    if float(d.tocall) > float(d.stack):
+        tocall = float(d.stack)
     bet = (float(d.tpot)*float(wr))/(1-float(wr))
-    if bet < float(d.tocall):
+    bet *= tight
+    if bet < float(tocall) or wr < 1/d.nplayer:
         return (0, round(bet, 1), 3)
-    if (bet*0.7 < 2*float(d.tocall)) or (bet*0.7 < float(d.tpot) / 3):
-        if float(d.tocall) == 0:
+    if (bet < 2*float(tocall)) or (bet < float(d.tpot) / 3):
+        if float(tocall) == 0:
             return (0, round(bet, 1), 1)
         return (0, round(bet, 1), 2)
-    return (0, round(bet*0.7, 1), 4)
+    return (0, round(bet, 1), 4)
 
 
 if __name__ == "__main__":

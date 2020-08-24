@@ -36,19 +36,20 @@ def pixelProcGreen(intensity):
 
     return intensity
 
-def read_card(file_name, en, th):
+def read_card(file_name, en, th, gb):
+    
     img = Image.open(file_name).convert('L')
     img = img.point(lambda p: p > th and 255)
     enhancer = ImageEnhance.Contrast(img)
     img = enhancer.enhance(float(en))
     #img = sharp.enhance(1)
-    #img = img.filter(ImageFilter.GaussianBlur(radius = 0))
+    img = img.filter(ImageFilter.GaussianBlur(radius = gb))
 
     img.save('images/errors/greyscalecard.png')
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    customconf = r'-c tessedit_char_whitelist=" 0123456789" --psm 10'
+    customconf = r'-c tessedit_char_whitelist="AKQJ0123456789" --psm 10'
     string = pytesseract.image_to_string('images/errors/greyscalecard.png', config=customconf)
-    print(en, th, ' = ',string)
+    print(en, th, gb,' = ',string)
     return (string)
 
     '''
@@ -69,13 +70,19 @@ if __name__ == "__main__":
     else :
         print('no file specified')
 
-    print(read_card(file, int(sys.argv[2]), int(sys.argv[3])))
+    print(read_card(file, int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[3])))
     '''
-    en = random.randint(0, 20)
-    th = random.randint(80, 160)
-    while (read_card(file, en, th) != sys.argv[2]):
-        en = random.randint(0, 20)
+    en = random.randint(0, 200)
+    en -= 100
+    th = random.randint(30, 160)
+    gb = random.randint(0, 20)
+    gb /= 10
+    while (read_card(file, en, th, gb) != sys.argv[2]):
+        en = random.randint(0, 200)
+        en -= 100
         th = random.randint(80, 160)
+        gb = random.randint(0, 20)
+        gb /= 10
 
-    print(read_card(file, sys.argv[2]))
-    '''
+    print(read_card(file, sys.argv[2]))'
+   '''
